@@ -1,0 +1,143 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+
+/* ---------- Header ---------- */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  height: var(--header-h);
+  padding-inline: var(--space-4);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.app-header-left,
+.app-header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.app-brand {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+}
+
+.header-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+.header-toggle:hover {
+  background-color: var(--color-primary-soft);
+  color: var(--color-text);
+}
+
+/* ---------- Shell grid (panels are always rendered; CSS decides layout) ---------- */
+.shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.panel {
+  min-width: 0;
+  min-height: 0;
+  background-color: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Desktop (>=1024px): three columns, collapsible via header toggles ---------- */
+@media (min-width: 1024px) {
+  .shell.has-sidebar.has-settings {
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr) var(--settings-w);
+  }
+
+  .shell.has-sidebar:not(.has-settings) {
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+  }
+
+  .shell.has-settings:not(.has-sidebar) {
+    grid-template-columns: minmax(0, 1fr) var(--settings-w);
+  }
+
+  /* Collapsed panels are removed from the layout entirely. */
+  .panel--sidebar:not(.is-open),
+  .panel--settings:not(.is-open) {
+    display: none;
+  }
+
+  .drawer-backdrop {
+    display: none;
+  }
+}
+
+/* ---------- Tablet / mobile (<1024px): off-canvas drawers over the chat ---------- */
+@media (max-width: 1023.98px) {
+  .panel--sidebar,
+  .panel--settings {
+    position: fixed;
+    top: var(--header-h);
+    bottom: 0;
+    width: min(340px, 88vw);
+    z-index: 20;
+    box-shadow: var(--shadow-3);
+    transition: transform var(--duration-base) var(--ease-standard);
+  }
+
+  .panel--sidebar {
+    left: 0;
+    border-right: 1px solid var(--color-border);
+    transform: translateX(-105%);
+  }
+
+  .panel--sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .panel--settings {
+    right: 0;
+    border-left: 1px solid var(--color-border);
+    transform: translateX(105%);
+  }
+
+  .panel--settings.is-open {
+    transform: translateX(0);
+  }
+
+  .drawer-backdrop {
+    position: fixed;
+    inset: var(--header-h) 0 0;
+    background-color: rgb(15 23 42 / 40%);
+    z-index: 15;
+  }
+}
+
+/* ---------- Delete dialog actions ---------- */
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
