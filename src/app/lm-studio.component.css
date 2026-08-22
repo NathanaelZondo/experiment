@@ -1,0 +1,185 @@
+/* LM Studio Component Styles */
+
+/* Connection Status */
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--spacing-2);
+  margin-bottom: var(--spacing-4);
+  font-size: var(--font-size-sm);
+}
+
+.status-bar .state-checking {
+  background: var(--bg-subtle);
+  color: var(--color-primary);
+}
+
+.status-bar .state-connected {
+  background: var(--color-primary);
+  color: white;
+}
+
+.status-bar .state-disconnected {
+  background: var(--bg-subtle);
+  color: var(--color-fg-muted or var(--color-fg));
+}
+
+.status-bar .state-failed {
+  background: var(--color-error or #f44336);
+  color: white;
+}
+
+/* Guidance Messages */
+.guidance {
+  padding: var(--spacing-4) var(--spacing-5);
+  border-radius: var(--spacing-3);
+  margin: var(--spacing-3) 0;
+  font-size: var(--font-size-sm);
+}
+
+.guidance guidance-failed {
+  background: rgba(244, 67, 54, 0.1);
+  color: var(--color-error or #f44336);
+  border-left: 3px solid var(--color-error or #f44336);
+}
+
+.guidance guidance-loading {
+  background: rgba(255, 193, 7, 0.1);
+  color: var(--color-warning or #ffc107);
+  border-left: 3px solid var(--color-warning or #ffc107);
+}
+
+.guidance guidance-summary {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-fg-muted or var(--color-fg));
+}
+
+/* Configuration Form */
+.config-form {
+  background: var(--bg-subtle);
+  border-radius: var(--spacing-3);
+  padding: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+.form-row {
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.form-row label {
+  min-width: 100px;
+  font-size: var(--font-size-sm);
+  color: var(--color-fg);
+}
+
+.input-field {
+  flex: 1;
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--border);
+  border-radius: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  background: white;
+  transition: border-color var(--transition-normal);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+.input-field.dimmed {
+  opacity: 0.5;
+  background: var(--bg-subtle);
+}
+
+/* Model Catalogue */
+.model-catalogue {
+  background: white;
+  border-radius: var(--spacing-3);
+  overflow: hidden;
+  margin-top: var(--spacing-4);
+}
+
+.catalogue-count {
+  padding: var(--spacing-3) var(--spacing-4);
+  color: var(--color-fg-muted);
+  font-size: var(--font-size-xs);
+  border-bottom: 1px solid var(--border);
+}
+
+.filter-section {
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border);
+}
+
+.filter-input {
+  width: 100%;
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--border);
+  border-radius: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  background: white;
+}
+
+/* Model Table */
+.model-table {
+  width: 100%;
+}
+
+.model-table thead {
+  background: var(--bg-subtle);
+}
+
+.model-table th,
+.model-table td {
+  padding: var(--spacing-3) var(--spacing-4);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: var(--font-size-sm);
+}
+
+.model-table th {
+  color: var(--color-fg-muted);
+}
+
+.model-table td .model-name {
+  font-weight: 500;
+  color: var(--color-fg);
+  cursor: pointer;
+}
+
+/* Capability Chips */
+.chip {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: var(--spacing-1);
+  background: var(--bg-subtle);
+  font-size: var(--font-size-xxs);
+  margin-right: 2px;
+  margin-bottom: 2px;
+}
+
+.chip.dimmed {
+  opacity: 0.5;
+  background: transparent;
+}
+
+/* Empty state in table */
+.empty-models {
+  padding: var(--spacing-8) var(--spacing-4);
+  text-align: center;
+  color: var(--color-fg-muted);
+  font-style: italic;
+}
+
+/* Table row hover */
+.model-row:hover {
+  background: rgba(33, 150, 243, 0.04);
+}

@@ -1,0 +1,171 @@
+<h2>LM Studio Connection</h2>
+
+<!-- Configuration Form -->
+<div class="config-form" [class.collapsed]="false">
+  <div class="form-row">
+    <label for="serverUrl">Server URL:</label>
+    <input
+      id="serverUrl"
+      type="text"
+      [value]="service.serverUrl()"
+      (input)="service.serverUrl.set($event.target.value)"
+      placeholder="http://localhost:1234"
+      class="input-field"
+    />
+  </div>
+
+  @if (service.apiToken()) {
+  <div class="form-row">
+    <label for="apiToken">API Token:</label>
+    <input
+      id="apiToken"
+      type="password"
+      [value]="service.apiToken()"
+      (input)="service.apiToken.set($event.target.value)"
+      placeholder="sk-..."
+      class="input-field"
+    />
+  </div>
+  } @else {
+  <div class="form-row">
+    <label for="apiToken">API Token:</label>
+    <input
+      id="apiToken"
+      type="password"
+      [value]="''"
+      (input)="service.apiToken.set(undefined)"
+      placeholder="sk-... (optional)"
+      class="input-field dimmed"
+    />
+  </div>
+  }
+
+  <div class="form-actions">
+    <button
+      class="btn-connect"
+      (click)="connect()"
+      [disabled]="service.isChecking() || service.isConnected()"
+    >
+      @if (service.isChecking()) {
+      <span>Connecting...</span>
+      } @else {
+      Connect
+      }
+    </button>
+
+    @if (!service.isChecking() && !service.isConnected()) {
+    <button class="btn-clear" (click)="clearConfig()">Clear</button>
+    }
+  </div>
+</div>
+
+<!-- Connection Status -->
+<div class="status-bar" [class.state-checking]="service.isChecking()"
+  [class.state-connected]="service.isConnected()"
+  [class.state-disconnected]="service.isDisconnected()"
+  [class.state-failed]="service.isFailed()">
+  <span class="status-label">{{ service.getConnectionStateLabel() }}</span>
+</div>
+
+<!-- Guidance Messages -->
+@if (service.isFailed()) {
+<div class="guidance guidance-failed">
+  <strong>Could not connect to LM Studio.</strong>
+  @if (!service.serverUrl()) {
+  <p>
+    No server URL configured. Enter the LM Studio server URL (e.g.
+    <code>http://localhost:1234</code>) and click Connect.
+  </p>
+  } @else {
+  <p>
+    Server not running or CORS issue. Ensure:<br />
+    • LM Studio is running with the local server enabled<br />
+    • The URL is correct<br />
+    • No firewall/antivirus blocking the connection<br />
+    • If using a token, it's properly configured in LM Studio
+  </p>
+  }
+</div>
+}
+
+@if (service.isConnected() && service.models().length === 0) {
+<div class="guidance guidance-loading">
+  Connected! Loading models...
+</div>
+}
+
+@if (service.isConnected() && service.models().length > 0) {
+<!-- Model Catalogue -->
+<div class="model-catalogue">
+  <p class="catalogue-count">
+    {{ service.chatModels().length }} of {{ service.models().length }}
+    models shown (chat-capable)
+  </p>
+
+  <!-- Filter -->
+  <div class="filter-section">
+    <input
+      type="text"
+      [value]="filterText"
+      (input)="filterText = $event.target.value"
+      placeholder="Filter chat-capable models..."
+      class="filter-input"
+    />
+  </div>
+
+  <!-- Table -->
+  <table class="model-table">
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Publisher</th>
+        <th>Quantization</th>
+        <th>Parameters</th>
+        <th>Size</th>
+        <th>Format</th>
+        <th>Capabilities</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (model of displayedModels; track model.id) {
+      <tr class="model-row">
+        <td class="model-name">{{ model.name }}</td>
+        <td>{{ model.publisher }}</td>
+        <td>{{ model.quantization }}</td>
+        <td>{{ model.parameterCount }}</td>
+        <td>{{ model.size }}</td>
+        <td>{{ model.format }}</td>
+        <td>
+          @if (model.capabilities.length > 0) {
+          @for (cap of model.capabilities; track cap) {
+          <span class="chip">{{ cap }}</span>
+          }
+          } @else {
+          <span class="chip dimmed">None</span>
+          }
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+
+  <!-- Empty state -->
+  @if (service.chatModels().length === 0 && service.models().length > 0) {
+  <tr>
+    <td colspan="7" class="empty-models">
+      No chat-capable models found. All models are shown above.
+    </td>
+  </tr>
+  }
+</div>
+}
+
+@if (!service.isConnected()) {
+<div class="guidance guidance-summary">
+  Enter a server URL and click Connect to discover locally available LLMs.<br />
+  <strong>CORS:</strong> If you get cross-origin errors, try running LM Studio with
+  CORS enabled or use the same origin as your application.<br />
+  <strong>Server not running:</strong> Ensure LM Studio is open and the local server
+  is started before connecting.
+</div>
+}

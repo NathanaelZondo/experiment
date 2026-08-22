@@ -1,0 +1,9 @@
+/* Shell component-specific overrides */
+:host {
+  display: block;
+}
+
+/* Ensure skip link works with focus-visible */
+.skip-link:focus-visible {
+  top: 0;
+}

@@ -1,0 +1,190 @@
+<!-- Skip link - jumps to main content -->
+<a href="#main-content" class="skip-link" aria-label="Skip to main content">
+  Skip to content
+</a>
+
+<main class="shell-main" id="main-content" role="main">
+  <!-- Three-panel layout -->
+  <div class="shell-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" role="navigation" aria-label="Main navigation">
+      <nav class="nav-menu">
+        @for (item of navItems; track item.id) {
+          <a
+            [routerLink]="item.link"
+            routerLinkActive="active"
+            class="nav-link"
+            [class.active]="isRoute(item.link)"
+            [attr.aria-current]="isRoute(item.link) ? 'page' : undefined"
+          >
+            {{ item.label }}
+          </a>
+        }
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content-area">
+      <router-outlet></router-outlet>
+    </main>
+
+    <!-- Right Panel / Actions -->
+    <aside
+      class="actions-panel"
+      role="complementary"
+      aria-label="Action controls"
+    >
+      @for (action of actionItems; track action.id) {
+        <button
+          class="action-btn"
+          (click)="action.action"
+          [class.active]="action.active"
+        >
+          {{ action.label }}
+        </button>
+      }
+    </aside>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="app-footer" role="contentinfo">
+  <small>Experiment App • Built with Angular</small>
+</footer>
+
+<style>
+/* Skip link */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--color-primary);
+  color: white;
+  padding: var(--spacing-3) var(--spacing-4);
+  text-decoration: none;
+  z-index: 100;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus-visible {
+  top: 0;
+}
+
+/* Shell layout */
+.shell-main {
+  display: flex;
+  min-height: calc(100vh - var(--spacing-6));
+}
+
+.shell-container {
+  display: flex;
+  width: 100%;
+  max-width: calc(100% - (var(--nav-width) * 2) - var(--spacing-8));
+  margin: 0 auto;
+  gap: var(--spacing-8);
+}
+
+/* Sidebar */
+.sidebar {
+  flex: 0 0 var(--nav-width);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  padding: var(--spacing-5) var(--spacing-6);
+  height: fit-content;
+}
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-2) var(--spacing-3);
+  color: var(--color-fg);
+  text-decoration: none;
+  border-radius: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  transition: background var(--transition-normal), color var(--transition-normal);
+}
+
+.nav-link:hover {
+  background: var(--bg-subtle);
+  color: var(--color-primary);
+}
+
+/* Three-panel layout for desktop */
+@media (min-width: 1024px) {
+  .shell-container {
+    max-width: calc(100% - (var(--nav-width) * 2) - var(--spacing-8));
+  }
+
+  .sidebar {
+    flex: 0 0 var(--nav-width);
+  }
+}
+
+/* Collapsed sidebar for tablet/mobile */
+@media (max-width: 1023px) {
+  .shell-container {
+    flex-direction: column;
+  }
+
+  .sidebar,
+  .actions-panel {
+    width: 100%;
+  }
+
+  .sidebar {
+    margin-bottom: var(--spacing-6);
+  }
+}
+
+/* Actions panel */
+.actions-panel {
+  flex: 0 0 var(--nav-width);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4) var(--spacing-5);
+  background: var(--bg-subtle);
+  border-left: 1px solid var(--border);
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--spacing-2);
+  color: var(--color-fg);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: border-color var(--transition-normal), background var(--transition-normal);
+}
+
+.action-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--bg-subtle);
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .shell-container {
+    gap: var(--spacing-4);
+  }
+
+  .sidebar,
+  .actions-panel {
+    padding: var(--spacing-3);
+  }
+}
+</style>

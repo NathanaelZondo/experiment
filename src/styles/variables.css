@@ -1,0 +1,80 @@
+/* Global design tokens - imported from token files */
+@import "./tokens/colors.css";
+@import "./tokens/spacing.css";
+@import "./tokens/typography.css";
+@import "./tokens/elevation.css";
+@import "./tokens/motion.css";
+
+/* CSS custom properties application */
+:root {
+  /* Colors (light mode default) */
+  --bg: var(--color-bg);
+  --fg: var(--color-fg);
+  --bg-subtle: var(--color-bg-subtle);
+  --border: var(--color-border);
+
+  /* Spacing */
+  --spacing-1: var(--spacing-1);
+  --spacing-2: var(--spacing-2);
+  --spacing-3: var(--spacing-3);
+  --spacing-4: var(--spacing-4);
+  --spacing-5: var(--spacing-5);
+  --spacing-6: var(--spacing-6);
+  --spacing-7: var(--spacing-7);
+  --spacing-8: var(--spacing-8);
+  --spacing-9: var(--spacing-9);
+  --spacing-10: var(--spacing-10);
+
+  /* Typography */
+  --font-family-sans: var(--font-family-sans);
+  --font-size-xs: var(--font-size-xs);
+  --font-size-sm: var(--font-size-sm);
+  --font-size-md: var(--font-size-md);
+  --font-size-lg: var(--font-size-lg);
+  --font-size-xl: var(--font-size-xl);
+  --font-size-2xl: var(--font-size-2xl);
+  --font-size-3xl: var(--font-size-3xl);
+
+  /* Font weights */
+  --font-weight-normal: var(--font-weight-normal);
+  --font-weight-medium: var(--font-weight-medium);
+  --font-weight-semibold: var(--font-weight-semibold);
+  --font-weight-bold: var(--font-weight-bold);
+
+  /* Line height */
+  --line-height-tight: var(--line-height-tight);
+  --line-height-normal: var(--line-height-normal);
+  --line-height-relaxed: var(--line-height-relaxed);
+
+  /* Elevation */
+  --shadow-0: var(--shadow-0);
+  --shadow-1: var(--shadow-1);
+  --shadow-2: var(--shadow-2);
+  --shadow-3: var(--shadow-3);
+  --shadow-4: var(--shadow-4);
+  --shadow-5: var(--shadow-5);
+  --shadow-6: var(--shadow-6);
+  --shadow-7: var(--shadow-7);
+  --shadow-8: var(--shadow-8);
+
+  /* Motion */
+  --transition-fast: var(--transition-fast);
+  --transition-normal: var(--transition-normal);
+  --transition-slow: var(--transition-slow);
+
+  /* Layout */
+  --header-height: 4rem;
+  --nav-width: 240px;
+  --nav-collapsed-width: 56px;
+}
+
+/* Dark mode html class */
+html.dark {
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-error: var(--color-error);
+  --color-bg: var(--color-bg);
+  --color-fg: var(--color-fg);
+}
