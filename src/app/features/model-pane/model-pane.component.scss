@@ -1,0 +1,48 @@
+/*
+ * Right-hand panel layout (Known Issue 2 fix).
+ * The panel is a bounded flex column; the catalogue region is the only growing
+ * element and scrolls internally. Nothing here can grow the panel beyond its
+ * grid track, so the centre conversation area is never displaced.
+ */
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0; /* bounded by the shell's grid row */
+  overflow: hidden;
+}
+
+.pane__fixed {
+  flex-shrink: 0;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pane__fixed--bottom {
+  border-bottom: none;
+  border-top: 1px solid var(--border);
+  max-height: 46%; /* keep the catalogue usable on short screens */
+  overflow-y: auto;
+}
+
+/* The only growing region — bounded, internally scrolling */
+.pane__catalog-region {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+
+
+  app-model-catalog {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+}

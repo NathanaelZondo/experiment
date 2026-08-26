@@ -1,0 +1,105 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-4) var(--space-2);
+}
+
+.sidebar__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+
+.sidebar__session-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0 var(--space-4) var(--space-3);
+  font-size: 11.5px;
+  color: var(--text-muted);
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.sidebar__list {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--space-2) var(--space-4);
+  overflow-y: auto; /* bounded internal scroll */
+  min-height: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: background var(--motion-fast), color var(--motion-fast);
+
+  &:hover {
+    background: var(--surface-2);
+    color: var(--text-primary);
+  }
+}
+
+.sidebar__item--active {
+  background: var(--accent-dim);
+  color: var(--text-primary);
+
+  .sidebar__item-title {
+    font-weight: 600;
+  }
+}
+
+.sidebar__item-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13.5px;
+}
+
+.sidebar__item-actions {
+  display: none;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.sidebar__item:hover .sidebar__item-actions,
+.sidebar__item:focus-within .sidebar__item-actions {
+  display: inline-flex;
+}
+
+.sidebar__rename {
+  width: 100%;
+  padding: 4px 8px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--surface-0);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 13.5px;
+}

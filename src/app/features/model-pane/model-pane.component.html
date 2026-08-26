@@ -1,0 +1,15 @@
+<div class="pane">
+  <div class="pane__fixed">
+    <app-connection-section />
+  </div>
+
+  <!-- The catalogue is the only growing region: bounded + internally scrolling -->
+  <div class="pane__catalog-region">
+    <app-model-catalog />
+  </div>
+
+  <div class="pane__fixed pane__fixed--bottom">
+    <app-session-metrics />
+    <app-generation-settings-form />
+  </div>
+</div>

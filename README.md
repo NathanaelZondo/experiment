@@ -10,7 +10,25 @@ To start a local development server, run:
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+The dev server binds `0.0.0.0` (both IPv4 and IPv6 localhost). Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+
+## LocalBench Chat
+
+A local-AI chat workstation (Angular 22) that talks directly to an LM Studio server on `http://localhost:1234` (editable in the app; all state is RAM-only — refreshing clears chats and settings).
+
+### Setup
+
+1. Start LM Studio, load a model, and start the local server (**Developer → Start Server**, port `1234` by default).
+2. Run `npm start` and open `http://localhost:4200/`.
+3. Click **New chat**, load a model in the right-hand panel, then type your first message.
+
+### Troubleshooting
+
+- **Badge shows Disconnected/Failed**: the app re-probes LM Studio automatically — on startup, on window focus, and every ~15 s while disconnected — so a server started after the page loaded reconnects on its own. Make sure the server is started and CORS is enabled (**Developer → Server**).
+- **Connected but sending does nothing**: you need an active conversation — click **New chat** first. (As a safety net the app now auto-creates one if a send still arrives without a conversation.)
+- **Response stuck on "Generating…"**: LM Studio serves a **single generation slot**. If another request is running (another tab, LM Studio's own chat), yours queues silently. The app now shows *"Waiting for the model…"* after ~30 s of silence and fails the message cleanly after a hard timeout instead of hanging; click **Stop** to abort.
+- **No visible answer from a reasoning model**: reasoning models think before answering (the thinking text streams under "Thinking…"). If the response ends with only reasoning, raise **Max output tokens** in the model settings or disable reasoning.
+- **localhost / IPv4 vs IPv6**: the dev server now binds `0.0.0.0`. LM Studio's server binds IPv4 (`0.0.0.0`) — if your browser ever resolves `localhost` only to `::1`, open `http://127.0.0.1:4200` or set the Server URL in the app to `http://127.0.0.1:1234`.
 
 ## Code scaffolding
 

@@ -1,0 +1,27 @@
+<section class="conn" aria-label="LM Studio connection">
+  <div class="conn__head">
+    <h2 class="pane__title">Connection</h2>
+    <app-status-badge [state]="status()" />
+  </div>
+
+  <div class="conn__fields">
+    <app-input label="Server URL" type="url" placeholder="http://localhost:1234" [value]="urlValue()" (valueChange)="urlValue.set($event)" hint="LM Studio native API base URL" />
+    <app-input label="API token (optional)" type="password" placeholder="Leave empty if no token is set" [value]="tokenValue()" (valueChange)="tokenValue.set($event)" hint="Held in memory only — never persisted or logged" />
+  </div>
+
+  <app-button variant="secondary" size="sm" [disabled]="status() === 'checking'" (click)="testConnection()">
+    {{ status() === 'checking' ? 'Checking…' : 'Test connection' }}
+  </app-button>
+
+  @if (lastError()) {
+    <div class="conn__error" role="alert">
+      <p class="mono">{{ lastError() }}</p>
+      <ul class="conn__guidance">
+        <li>Make sure LM Studio is running and the server is started.</li>
+        <li>If the URL is correct, enable CORS in LM Studio (Developer → Server) so this page can reach it.</li>
+      </ul>
+    </div>
+  } @else if (status() === 'connected') {
+    <p class="conn__ok" role="status">Connected — {{ modelCount().length }} model{{ modelCount().length === 1 ? '' : 's' }} available.</p>
+  }
+</section>

@@ -1,0 +1,148 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ------------------------------- top bar -------------------------------- */
+
+.topbar {
+  --topbar-height: 52px;
+
+  flex-shrink: 0;
+  height: var(--topbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0 var(--space-4);
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--border);
+  z-index: 60;
+}
+
+.topbar__left,
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+  white-space: nowrap;
+
+  svg {
+    color: var(--accent);
+  }
+}
+
+.drawer-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-3);
+    color: var(--text-primary);
+  }
+}
+
+/* ------------------------------ panel grid ------------------------------- */
+/*
+ * Known Issue 2 fix: the centre column is minmax(0,1fr) so its width can never
+ * be inflated by side-panel content; every panel is height-bounded (min-height:0)
+ * and scrolls internally. The model catalogue therefore scrolls inside the
+ * right-hand panel instead of displacing the conversation area.
+ */
+
+.panels {
+  flex: 1 1 auto;
+  min-height: 0; /* bound the grid to the remaining viewport height */
+  display: grid;
+  grid-template-columns: var(--panel-left-width) minmax(0, 1fr) var(--panel-right-width);
+}
+
+.panel {
+  min-height: 0; /* allow internal scrolling instead of overflow */
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-1);
+}
+
+.panel--left {
+  border-right: 1px solid var(--border);
+}
+
+.panel--center {
+  background: var(--surface-0);
+}
+
+.panel--right {
+  border-left: 1px solid var(--border);
+}
+
+/* --------------------------- responsive drawers -------------------------- */
+
+@media (max-width: 1023.98px) {
+  .panels {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .drawer-toggle {
+    display: inline-flex;
+  }
+
+  .panel--left,
+  .panel--right {
+    position: fixed;
+    top: var(--topbar-height);
+    bottom: 0;
+    width: min(340px, 86vw);
+    z-index: 50;
+    box-shadow: var(--shadow-2);
+    transition: transform var(--motion-base);
+  }
+
+  .panel--left {
+    left: 0;
+    transform: translateX(-102%);
+  }
+
+  .panel--right {
+    right: 0;
+    transform: translateX(102%);
+  }
+
+  .panel--left.panel--open,
+  .panel--right.panel--open {
+    transform: none;
+  }
+
+  .drawer-backdrop {
+    position: fixed;
+    top: var(--topbar-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(5, 8, 10, 0.55);
+    z-index: 40;
+  }
+}

@@ -1,0 +1,19 @@
+<label class="lb-field__label" for="lb-input">{{ label() }}</label>
+<input
+  id="lb-input"
+  class="lb-field__control"
+  [class.lb-field__control--invalid]="error() !== null"
+  [type]="type()"
+  [placeholder]="placeholder()"
+  [disabled]="disabled()"
+  [attr.aria-invalid]="error() !== null ? 'true' : null"
+  [attr.aria-describedby]="describedBy()"
+  [ngModel]="value()"
+  (ngModelChange)="value.set($event)"
+/>
+@if (hint() !== null) {
+  <span id="lb-input-hint" class="lb-field__hint">{{ hint() }}</span>
+}
+@if (error() !== null) {
+  <span id="lb-input-error" class="lb-field__error" role="alert">{{ error() }}</span>
+}

@@ -1,0 +1,145 @@
+<article [class]="'msg ' + (isUser() ? 'msg--user' : 'msg--assistant')" [attr.data-status]="message().status">
+  <header class="msg__meta mono">
+    @if (!isUser()) {
+      <span class="msg__model">{{ message().modelId ?? 'unknown model' }}</span>
+      <span class="msg__dot" aria-hidden="true">·</span>
+    }
+    <time [attr.datetime]="isoTimestamp(message().createdAt)">{{ formatTime(message().createdAt) }}</time>
+  </header>
+
+  <!-- User message: plain text with edit support -->
+  @if (isUser()) {
+    @if (editing()) {
+      <div class="msg__edit">
+        <textarea
+          class="msg__edit-input"
+          rows="3"
+          [ngModel]="editValue()"
+          (ngModelChange)="editValue.set($event)"
+          aria-label="Edit message"
+          (keydown.enter)="$event.preventDefault(); commitEdit()"
+          (keydown.escape)="cancelEdit()"
+        ></textarea>
+        <div class="msg__edit-actions">
+          <app-button variant="ghost" size="sm" (click)="cancelEdit()">Cancel</app-button>
+          <app-button variant="primary" size="sm" [disabled]="editValue().trim() === ''" (click)="commitEdit()">
+            Save &amp; regenerate
+          </app-button>
+        </div>
+      </div>
+    } @else {
+      <div class="msg__bubble msg__bubble--user">{{ message().content }}</div>
+    }
+  }
+
+  <!-- Assistant message: markdown + reasoning + metrics -->
+  @if (!isUser()) {
+    @if (message().reasoning) {
+      <!-- While streaming, keep the thinking text visible so the user sees the
+           model is working; collapse it back once the turn completes. -->
+      <details class="msg__reasoning" [open]="isThinking()">
+        <summary>{{ isThinking() ? 'Thinking…' : 'Reasoning' }}</summary>
+        <div class="md md--reasoning" [innerHTML]="message().reasoning | markdown"></div>
+      </details>
+    }
+
+    @if (message().content || message().status === 'streaming' || message().status === 'pending') {
+      <div class="msg__bubble msg__bubble--assistant">
+        @if (message().content) {
+          <div class="md" [innerHTML]="message().content | markdown" (click)="onMarkdownClick($event)"></div>
+        }
+        @if ((message().status === 'pending' || message().status === 'streaming') && !message().content) {
+          <span class="msg__thinking mono">Generating…</span>
+        }
+      </div>
+    }
+
+    <!-- A completed turn that produced no visible answer (e.g. a reasoning model
+         that used all of "Max output tokens" thinking, or an empty server
+         response) must not look like a broken connection. -->
+    @if (!message().content && message().status === 'completed') {
+      <p class="msg__notice mono" role="note">
+        @if (message().reasoning) {
+          The model produced reasoning but no final answer. Raise “Max output tokens” in the model settings, or use a non-reasoning model.
+        } @else {
+          The server returned an empty response.
+        }
+      </p>
+    }
+
+    @if (message().status === 'failed' || message().status === 'cancelled') {
+      <p class="msg__error" role="alert">
+        {{ message().status === 'cancelled' ? 'Stopped by user.' : 'Generation failed.' }}
+        @if (message().error) {
+          <span class="mono">{{ message().error }}</span>
+        }
+      </p>
+    }
+
+    <!-- Benchmark metrics (Phase 9) -->
+    @if (message().metrics && (message().status === 'completed' || message().status === 'cancelled')) {
+      <button type="button" class="msg__metrics-toggle mono" [attr.aria-expanded]="showMetrics()" (click)="showMetrics.set(!showMetrics())">
+        {{ showMetrics() ? 'Hide metrics' : 'Show metrics' }}
+      </button>
+
+      @if (showMetrics()) {
+        <div class="msg__metrics mono" role="group" aria-label="Response metrics">
+          <dl class="msg__metrics-grid">
+            <div><dt>Input tokens</dt><dd>{{ message().metrics?.inputTokens | metric }}</dd></div>
+            <div><dt>Output tokens</dt><dd>{{ message().metrics?.outputTokens | metric }}</dd></div>
+            <div><dt>Reasoning tokens</dt><dd>{{ message().metrics?.reasoningTokens | metric }}</dd></div>
+            <div><dt>Tokens / s</dt><dd>{{ message().metrics?.tokensPerSecond | metric }}</dd></div>
+            <div><dt>Time to first token</dt><dd>{{ message().metrics?.timeToFirstTokenMs | duration }}</dd></div>
+            <div><dt>Total elapsed</dt><dd>{{ message().metrics?.totalElapsedMs | duration }}</dd></div>
+            <div><dt>Model load time</dt><dd>{{ message().metrics?.modelLoadTimeMs | duration }}</dd></div>
+            <div><dt>Instance</dt><dd>{{ message().metrics?.instanceId ?? '—' }}</dd></div>
+          </dl>
+          <app-button variant="ghost" size="sm" (click)="copyText(metricsJson)">Copy results as JSON</app-button>
+        </div>
+      }
+    }
+  }
+
+  <!-- Action row -->
+  <footer class="msg__actions">
+    @if (!isUser()) {
+      <app-icon-button size="sm" label="Copy message" (click)="copyText(message().content)">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M4 3.5A1.5 1.5 0 0 1 5.5 2h7A1.5 1.5 0 0 1 14 3.5v8a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 4 11.5v-8ZM6 2v.5A1.5 1.5 0 0 0 4.5 4H4v7.5A1.5 1.5 0 0 0 5.5 13h7a1.5 1.5 0 0 0 1.5-1.5V4h-.5A1.5 1.5 0 0 0 12 2.5H6Z" />
+        </svg>
+      </app-icon-button>
+    }
+
+    @if (isUser()) {
+      <app-tooltip text="Edit and regenerate from this point">
+        <app-icon-button size="sm" label="Edit message" (click)="startEdit()">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M14.38 2.7a1.3 1.3 0 0 0-1.85 0L8.94 6.29l-1.18 3.06a.75.75 0 0 0 .94.94l3.06-1.18 3.59-3.59a1.3 1.3 0 0 0 0-1.85ZM2 11.25V13a1 1 0 0 0 1 1h7.75l-.94 1.62a.75.75 0 0 0 1.3.75L13.8 11.4a.75.75 0 0 0-1.3-.75L10.75 12H3v-.75Z" />
+          </svg>
+        </app-icon-button>
+      </app-tooltip>
+    }
+
+    @if (!isUser() && isLatestAssistant()) {
+      <app-tooltip text="Regenerate this response">
+        <app-icon-button size="sm" label="Regenerate response" (click)="regenerated.emit()">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 2.5A5.5 5.5 0 0 0 2.7 6H1l2.3 2.4L5.6 6H4a4 4 0 0 1 7.6-1.3l-1.4 1.4h3.5V2.5l-1.9 1.9A5.5 5.5 0 0 0 8 2.5Zm5.3 3.6L11 8.5h1.6a4 4 0 0 1-7.6 1.3l1.4-1.4H2.9v3.5l1.9-1.9A5.5 5.5 0 0 0 13.3 8h-1.6Z" />
+          </svg>
+        </app-icon-button>
+      </app-tooltip>
+    }
+
+    <app-tooltip text="Delete this message and everything after it">
+      <app-icon-button size="sm" label="Delete message" (click)="deleteRequested.emit(message().id)">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M6.5 1.75V3h3V1.75a.75.75 0 0 0-1.5 0Zm4.25 3.5L9.5 13H6.5L5.25 5.25h5.5ZM2.75 5A.75.75 0 0 1 3.5 4.25h9a.75.75 0 0 1 0 1.5h-1l-.6 8.13A1.75 1.75 0 0 1 9.15 15.5H6.85a1.75 1.75 0 0 1-1.75-1.62L4.5 5.75h-1A.75.75 0 0 1 2.75 5Z" />
+        </svg>
+      </app-icon-button>
+    </app-tooltip>
+
+    @if (copiedFlash()) {
+      <span class="msg__copied mono" role="status">Copied</span>
+    }
+  </footer>
+</article>

@@ -1,0 +1,79 @@
+<div class="chat">
+  <header class="chat__header">
+    @if (active()) {
+      <h1 class="chat__title">{{ active()!.title }}</h1>
+      <div class="chat__header-actions">
+        <app-button variant="ghost" size="sm" (click)="openPromptDialog()">
+          System prompt
+        </app-button>
+        <app-button variant="ghost" size="sm" [disabled]="generating() || active()!.messages.length === 0" (click)="clearConversation()">
+          Clear conversation
+        </app-button>
+      </div>
+    } @else {
+      <h1 class="chat__title">LocalBench Chat</h1>
+    }
+  </header>
+
+  <div #scroller class="chat__scroll" (scroll)="onScroll()" aria-label="Message history">
+    @if (!active() || active()!.messages.length === 0) {
+      <app-empty-state title="Start a conversation" hint="Pick or load a model on the right, then ask your first question. Everything stays in memory — refreshing clears chats.">
+        <app-button variant="secondary" size="sm" (click)="newConversation()">New chat</app-button>
+      </app-empty-state>
+    } @else {
+      <div class="chat__messages">
+        @for (msg of active()!.messages; track msg.id) {
+          <app-message-item
+            [message]="msg"
+            [isLatestAssistant]="isLatestAssistant(msg.id)"
+            (edited)="onEdited($event.messageId, $event.content)"
+            (regenerated)="onRegenerated()"
+            (deleteRequested)="onDeleteRequested($event)"
+          />
+        }
+      </div>
+
+      @if (generating() && phase()) {
+        <p class="chat__phase mono" role="status">{{ phase() }}</p>
+      }
+    }
+  </div>
+
+  @if (showJumpButton()) {
+    <button type="button" class="chat__jump mono" (click)="jumpToLatest()">↓ Latest</button>
+  }
+
+  <app-composer (sent)="onSend($event)" />
+</div>
+
+<app-dialog [open]="deleteDialogOpen()" (openChange)="onDialogOpenChange($event)" title="Delete message?">
+  <p dialogBody>
+    @if (deleteDependents() > 0) {
+      This message has {{ deleteDependents() }} later dependent message{{ deleteDependents() === 1 ? '' : 's' }} that will also be removed.
+    } @else {
+      The message will be removed from this conversation.
+    }
+  </p>
+  <div dialogFooter>
+    <app-button variant="ghost" size="sm" (click)="cancelDelete()">Cancel</app-button>
+    <app-button variant="danger" size="sm" (click)="performDelete()">Delete</app-button>
+  </div>
+</app-dialog>
+
+<app-dialog [open]="promptDialogOpen()" (openChange)="onPromptDialogOpenChange($event)" title="System prompt">
+  <p dialogBody>
+    Prepended to every generation request in this conversation. Held in memory only — refreshing the page clears it.
+  </p>
+  <app-textarea
+    dialogBody
+    label="System prompt"
+    [rows]="4"
+    placeholder="e.g. You are a terse, precise technical assistant."
+    [value]="promptDraft()"
+    (valueChange)="promptDraft.set($event)"
+  />
+  <div dialogFooter>
+    <app-button variant="ghost" size="sm" (click)="cancelPrompt()">Cancel</app-button>
+    <app-button variant="primary" size="sm" (click)="savePrompt()">Save</app-button>
+  </div>
+</app-dialog>

@@ -1,0 +1,56 @@
+:host {
+  display: block;
+}
+
+.lb-field__label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-1);
+  letter-spacing: 0.02em;
+}
+
+.lb-field__control {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-0);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+  }
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.lb-field__control--area {
+  resize: vertical;
+  min-height: 64px;
+  line-height: 1.45;
+}
+
+.lb-field__control--invalid {
+  border-color: var(--status-failed);
+}
+
+.lb-field__error {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: 12px;
+  color: var(--status-failed);
+}

@@ -1,0 +1,17 @@
+<section class="sm" aria-label="Session metrics">
+  <h2 class="pane__title">Session metrics</h2>
+
+  @if (aggregates()) {
+    <dl class="sm__grid mono">
+      <div><dt>Responses</dt><dd>{{ aggregates()!.responses }}</dd></div>
+      <div><dt>Input tokens</dt><dd>{{ aggregates()!.inputTokens | metric }}</dd></div>
+      <div><dt>Output tokens</dt><dd>{{ aggregates()!.outputTokens | metric }}</dd></div>
+      <div><dt>Reasoning tokens</dt><dd>{{ aggregates()!.reasoningTokens | metric }}</dd></div>
+      <div><dt>Avg tokens / s</dt><dd>{{ aggregates()!.avgTps | metric }}</dd></div>
+      <div><dt>Total elapsed</dt><dd>{{ aggregates()!.totalElapsedMs | duration }}</dd></div>
+    </dl>
+    <app-button variant="ghost" size="sm" (click)="copySession()">Copy session as JSON</app-button>
+  } @else {
+    <p class="sm__empty">No benchmarked responses in this conversation yet.</p>
+  }
+</section>

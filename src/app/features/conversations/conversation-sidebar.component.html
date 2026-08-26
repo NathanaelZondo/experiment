@@ -1,0 +1,74 @@
+<div class="sidebar">
+  <header class="sidebar__header">
+    <h2 class="sidebar__title">Conversations</h2>
+    <app-button variant="primary" size="sm" (click)="newConversation()">
+      <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor" aria-hidden="true">
+        <path d="M7.47 2.5a.75.75 0 0 1 .99-.7l3.78 1.09a.75.75 0 0 1 .52.7v4.06c0 .31-.18.6-.46.73l-4.5 2.06a.75.75 0 0 1-.99-.99l.72-3.18L7.47 2.5Z" />
+      </svg>
+      New chat
+    </app-button>
+  </header>
+
+  <p class="sidebar__session-note" role="note">
+    <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor" aria-hidden="true">
+      <path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm9-3a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM7.25 7h1.5v4.25h-1.5V7Z" />
+    </svg>
+    Session only — refreshing clears chats
+  </p>
+
+  @if (conversations().length === 0) {
+    <app-empty-state title="No conversations yet" hint="Start a new chat to begin benchmarking your local models.">
+      <app-button variant="secondary" size="sm" (click)="newConversation()">Create first chat</app-button>
+    </app-empty-state>
+  } @else {
+    <ul class="sidebar__list" role="listbox" aria-label="Conversations">
+      @for (conv of conversations(); track conv.id) {
+        <li
+          class="sidebar__item"
+          [class.sidebar__item--active]="conv.id === activeId()"
+          role="option"
+          [attr.aria-selected]="conv.id === activeId() ? 'true' : 'false'"
+          (click)="select(conv.id)"
+        >
+          @if (renamingId() === conv.id) {
+            <input
+              class="sidebar__rename"
+              type="text"
+              [ngModel]="renameValue()"
+              (ngModelChange)="renameValue.set($event)"
+              (keydown.enter)="commitRename()"
+              (keydown.escape)="cancelRename()"
+              (blur)="commitRename()"
+              aria-label="Rename conversation"
+            />
+          } @else {
+            <span class="sidebar__item-title">{{ conv.title }}</span>
+            <span class="sidebar__item-actions">
+              <app-icon-button size="sm" label="Rename conversation" (click)="$event.stopPropagation(); startRename(conv.id)">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                  <path d="M14.38 2.7a1.3 1.3 0 0 0-1.85 0L8.94 6.29l-1.18 3.06a.75.75 0 0 0 .94.94l3.06-1.18 3.59-3.59a1.3 1.3 0 0 0 0-1.85ZM2 11.25V13a1 1 0 0 0 1 1h7.75l-.94 1.62a.75.75 0 0 0 1.3.75L13.8 11.4a.75.75 0 0 0-1.3-.75L10.75 12H3v-.75Z" />
+                </svg>
+              </app-icon-button>
+              <app-icon-button size="sm" label="Delete conversation" (click)="$event.stopPropagation(); requestDelete(conv.id)">
+                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                  <path d="M6.5 1.75V3h3V1.75a.75.75 0 0 0-1.5 0Zm4.25 3.5L9.5 13H6.5L5.25 5.25h5.5ZM2.75 5A.75.75 0 0 1 3.5 4.25h9a.75.75 0 0 1 0 1.5h-1l-.6 8.13A1.75 1.75 0 0 1 9.15 15.5H6.85a1.75 1.75 0 0 1-1.75-1.62L4.5 5.75h-1A.75.75 0 0 1 2.75 5Z" />
+                </svg>
+              </app-icon-button>
+            </span>
+          }
+        </li>
+      }
+    </ul>
+  }
+</div>
+
+<app-dialog [open]="deleteConfirmOpen()" (openChange)="deleteConfirmOpen.set($event)" title="Delete conversation?">
+  <p dialogBody>
+    “{{ confirmTargetTitle }}” contains {{ confirmTargetMessageCount }} message{{ confirmTargetMessageCount === 1 ? '' : 's' }}.
+    Deleting it cannot be undone (session-only storage).
+  </p>
+  <div dialogFooter>
+    <app-button variant="ghost" size="sm" (click)="cancelDelete()">Cancel</app-button>
+    <app-button variant="danger" size="sm" (click)="confirmDelete()">Delete</app-button>
+  </div>
+</app-dialog>

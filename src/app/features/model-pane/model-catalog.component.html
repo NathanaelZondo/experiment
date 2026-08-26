@@ -1,0 +1,81 @@
+<section class="catalog" aria-label="Model catalogue">
+  <div class="catalog__head">
+    <h2 class="pane__title">Models</h2>
+    <label class="catalog__filter mono">
+      <input type="checkbox" [ngModel]="chatOnly()" (ngModelChange)="chatOnly.set($event)" />
+      chat-capable only
+    </label>
+  </div>
+
+  @if (lifecycleError()) {
+    <div class="catalog__error" role="alert">
+      <p class="mono">{{ lifecycleError() }}</p>
+      <app-button variant="ghost" size="sm" (click)="clearError()">Dismiss</app-button>
+    </div>
+  }
+
+  @if (status() !== 'connected') {
+    <app-empty-state title="Not connected" hint="Test the connection above to discover locally available models.">
+      <app-skeleton [height]="14" />
+    </app-empty-state>
+  } @else if (models().length === 0) {
+    <app-empty-state title="No models found" hint="LM Studio reports no installed models for this server." />
+  } @else if (visibleModels().length === 0) {
+    <app-empty-state title="No chat-capable models" hint="None of the discovered models report chat capability. Disable the filter to see all models." />
+  } @else {
+    <!-- Bounded scroll region: long lists scroll here, never push the layout -->
+    <ul class="catalog__list" role="list">
+      @for (model of visibleModels(); track model.id) {
+        <li class="catalog__item mono" [class.catalog__item--loaded]="model.loaded">
+          <div class="catalog__row">
+            <span class="catalog__name">{{ model.name }}</span>
+            @if (model.loaded) {
+              <span class="catalog__loaded-badge">loaded</span>
+            }
+          </div>
+
+          <p class="catalog__meta">
+            {{ model.publisher ?? '—' }} · {{ model.quantization ?? '—' }} · {{ model.parameterCount ?? '—' }} params ·
+            {{ model.sizeBytes | bytes }} · {{ model.format ?? '—' }}
+          </p>
+
+          @if (model.capabilities.length > 0) {
+            <p class="catalog__caps">{{ model.capabilities.join(' · ') }}</p>
+          }
+
+          <div class="catalog__actions">
+            @if (model.loaded) {
+              <app-button variant="secondary" size="sm" [disabled]="busy" (click)="unloadModel()">Unload</app-button>
+            } @else {
+              <app-button
+                variant="primary"
+                size="sm"
+                [disabled]="!model.chatCapable || busy || generating()"
+                (click)="loadModel(model)"
+              >
+                Load
+              </app-button>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+
+    @if (lastLoadDurationMs() !== null) {
+      <p class="catalog__applied mono" role="note">
+        Applied load configuration: LM Studio defaults · last load {{ lastLoadDurationMs() | duration }}
+      </p>
+    }
+  }
+
+  <!-- Loading overlay with elapsed time -->
+  @if (loading()) {
+    <div class="catalog__overlay" role="status" aria-live="polite">
+      <div class="catalog__overlay-card mono">
+        <span class="catalog__spinner" aria-hidden="true"></span>
+        Loading {{ loading()!.modelId }}…
+        <span class="catalog__elapsed">{{ loadingElapsedMs | duration }}</span>
+      </div>
+    </div>
+  }
+</section>

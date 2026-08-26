@@ -1,0 +1,64 @@
+.lb-dialog__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 10, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 90;
+  padding: var(--space-4);
+}
+
+.lb-dialog {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
+  width: min(440px, 100%);
+  outline: none;
+}
+
+.lb-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5) 0;
+}
+
+.lb-dialog__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.lb-dialog__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-3);
+    color: var(--text-primary);
+  }
+}
+
+.lb-dialog__body {
+  padding: var(--space-3) var(--space-5) var(--space-4);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.lb-dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: 0 var(--space-5) var(--space-4);
+}

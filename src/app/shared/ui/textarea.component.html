@@ -1,0 +1,16 @@
+<label class="lb-field__label" for="lb-textarea">{{ label() }}</label>
+<textarea
+  id="lb-textarea"
+  class="lb-field__control lb-field__control--area"
+  [class.lb-field__control--invalid]="error() !== null"
+  [placeholder]="placeholder()"
+  [rows]="rows()"
+  [disabled]="disabled()"
+  [attr.aria-invalid]="error() !== null ? 'true' : null"
+  [attr.aria-describedby]="describedBy()"
+  [ngModel]="value()"
+  (ngModelChange)="value.set($event)"
+></textarea>
+@if (error() !== null) {
+  <span id="lb-textarea-error" class="lb-field__error" role="alert">{{ error() }}</span>
+}

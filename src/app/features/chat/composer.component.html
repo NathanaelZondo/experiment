@@ -1,0 +1,38 @@
+<div class="composer">
+  <div class="composer__row">
+    <textarea
+      #box
+      class="composer__input"
+      rows="2"
+      placeholder="Ask your local model… (Enter to send, Shift+Enter for a new line)"
+      aria-label="Message input"
+      [ngModel]="text()"
+      (ngModelChange)="text.set($event)"
+      (keydown)="onKeydown($event)"
+    ></textarea>
+
+    @if (generating()) {
+      <app-tooltip text="Stop generating">
+        <app-button variant="danger" size="lg" (click)="stop()">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true">
+            <rect x="3.5" y="3.5" width="9" height="9" rx="1.5" />
+          </svg>
+          Stop
+        </app-button>
+      </app-tooltip>
+    } @else {
+      <app-tooltip [text]="canSend().ok ? 'Send message' : (canSend().reason ?? 'Cannot send')">
+        <app-button variant="primary" size="lg" [disabled]="!canSend().ok || text().trim() === ''" (click)="send()">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor" aria-hidden="true">
+            <path d="M2.5 8a.75.75 0 0 1 .75-.75h8.5v-3l4.25 3.75-4.25 3.75v-3H3.25A.75.75 0 0 1 2.5 8Z" transform="rotate(90 8 8)" />
+          </svg>
+          Send
+        </app-button>
+      </app-tooltip>
+    }
+  </div>
+
+  @if (!canSend().ok && !generating()) {
+    <p class="composer__hint" role="status">{{ canSend().reason }}</p>
+  }
+</div>
